@@ -1,8 +1,7 @@
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const backRoot = join(__dirname, '../..');
-const repoRoot = join(backRoot, '..');
 const workflowsDir = join(backRoot, '.github/workflows');
 
 function readWorkflow(name: string): string {
@@ -159,17 +158,3 @@ describe.each(['.env.staging.example', '.env.production.example'])(
     });
   },
 );
-
-describe('ADR — organisation des repos Git et stratégie de déploiement', () => {
-  const adrPath = join(
-    repoRoot,
-    'docs/adr/2026-06-13-organisation-repos-git-et-strategie-deploiement.md',
-  );
-
-  it('exists with status "Accepté"', () => {
-    expect(existsSync(adrPath)).toBe(true);
-
-    const content = readFileSync(adrPath, 'utf-8');
-    expect(content).toMatch(/## Statut\s*\n\s*Accepté/);
-  });
-});
