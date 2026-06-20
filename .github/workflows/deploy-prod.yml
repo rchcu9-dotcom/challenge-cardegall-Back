@@ -32,6 +32,8 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
@@ -60,10 +62,14 @@ jobs:
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
       - name: Build & push Docker image
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
         run: |
           IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
           echo "IMAGE=$IMAGE" >> $GITHUB_ENV
-          docker build --no-cache -t "$IMAGE" .
+          docker build --no-cache \
+            --secret id=node_auth_token,env=NODE_AUTH_TOKEN \
+            -t "$IMAGE" .
           docker push "$IMAGE"
 
       - name: Deploy to Cloud Run

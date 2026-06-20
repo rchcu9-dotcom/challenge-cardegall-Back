@@ -3,7 +3,7 @@ import {
   Injectable,
   ServiceUnavailableException,
 } from '@nestjs/common';
-import { isGoogleOAuthConfigured } from './google-oauth.config';
+import { isGoogleOAuthConfigured } from '@rchcu9-dotcom/auth-passport-back';
 
 @Injectable()
 export class GoogleConfiguredGuard implements CanActivate {

@@ -33,6 +33,8 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
@@ -56,7 +58,12 @@ jobs:
         run: az acr login --name $ACR_NAME
 
       - name: Build Docker image
-        run: docker build --no-cache -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$TAG .
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.PACKAGES_READ_TOKEN }}
+        run: |
+          docker build --no-cache \
+            --secret id=node_auth_token,env=NODE_AUTH_TOKEN \
+            -t $ACR_LOGIN_SERVER/$IMAGE_NAME:$TAG .
 
       - name: Push Docker image
         run: docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:$TAG

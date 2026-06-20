@@ -4,10 +4,13 @@ WORKDIR /app
 
 RUN corepack enable
 
-# Copy manifests only (better layer caching)
-COPY package.json pnpm-lock.yaml ./
+# Copy manifests only (better layer caching). .npmrc is required to resolve
+# @rchcu9-dotcom/* packages from GitHub Packages (the auth token is injected via a
+# BuildKit secret mount below, never baked into an image layer).
+COPY package.json pnpm-lock.yaml .npmrc ./
 ENV NODE_ENV=development
-RUN pnpm install --frozen-lockfile --prod=false
+RUN --mount=type=secret,id=node_auth_token,env=NODE_AUTH_TOKEN \
+    pnpm install --frozen-lockfile --prod=false
 
 # Copy the rest of the backend and build
 COPY . .
