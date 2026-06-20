@@ -1,0 +1,166 @@
+// Schéma Prisma — Système de persistance Challenge CardeGall
+// Voir docs/specs/quel-systeme-de-persistence-mettre-en-place-un-driver-prisma.md (section 2)
+// et son .track.md (section "Arch · 2026-06-18") pour les décisions d'architecture.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Equipe {
+  id                  String       @id @default(uuid())
+  nom                 String
+  capitaineUserId     String
+  capitainePseudo     String?
+  nbJoueursApprox     Int
+  nbFemininesEnvisage Int
+  commentaire         String?
+  statut              StatutEquipe @default(inscrite)
+  nbFemininesReel     Int?
+  ordreArrivee        Int?
+  dateInscription     String
+  dateEnrolement      String?
+
+  matchesCommeA  Match[]       @relation("EquipeA")
+  matchesCommeB  Match[]       @relation("EquipeB")
+  matchesFinaleA MatchFinale[] @relation("EquipeFinaleA")
+  matchesFinaleB MatchFinale[] @relation("EquipeFinaleB")
+
+  @@map("equipe")
+}
+
+enum StatutEquipe {
+  inscrite
+  enrolee
+  engagee
+  retiree
+}
+
+model TournoiEtat {
+  id                    Int      @id @default(1)
+  enrolementsClotures   Boolean  @default(false)
+  phaseFinaleDeclenchee Boolean  @default(false)
+  classementFinalPoules Json?
+
+  @@map("tournoi_etat")
+}
+
+model Tour {
+  id           String     @id @default(uuid())
+  numero       Int
+  statut       StatutTour @default(planifie)
+  parametres   Json
+  equipesBecot Json
+
+  matches Match[]
+
+  @@map("tour")
+}
+
+enum StatutTour {
+  planifie
+  en_cours
+  termine
+}
+
+model Match {
+  id               String      @id @default(uuid())
+  tourId           String
+  equipeAId        String
+  equipeBId        String?
+  estBye           Boolean     @default(false)
+  terrain          String?
+  heureDebutPrevue String?
+  heureFinPrevue   String?
+  scoreA           Int?
+  scoreB           Int?
+  statut           StatutMatch @default(a_jouer)
+
+  tour    Tour   @relation(fields: [tourId], references: [id])
+  equipeA Equipe @relation("EquipeA", fields: [equipeAId], references: [id])
+  equipeB Equipe? @relation("EquipeB", fields: [equipeBId], references: [id])
+
+  @@map("match")
+}
+
+enum StatutMatch {
+  a_jouer
+  en_cours
+  termine
+}
+
+model MatchFinale {
+  id        String            @id @default(uuid())
+  type      TypeMatchFinale
+  equipeAId String?
+  equipeBId String?
+  scoreA    Int?
+  scoreB    Int?
+  statut    StatutMatchFinale @default(a_jouer)
+
+  equipeA Equipe? @relation("EquipeFinaleA", fields: [equipeAId], references: [id])
+  equipeB Equipe? @relation("EquipeFinaleB", fields: [equipeBId], references: [id])
+
+  phaseFinaleCommeA   PhaseFinale? @relation("DemiFinaleA")
+  phaseFinaleCommeB   PhaseFinale? @relation("DemiFinaleB")
+  phaseFinaleCardebat PhaseFinale? @relation("FinaleCardebat")
+  phaseFinaleLeGall   PhaseFinale? @relation("FinaleLeGall")
+
+  @@map("match_finale")
+}
+
+enum TypeMatchFinale {
+  demi_finale_a
+  demi_finale_b
+  finale_cardebat
+  finale_le_gall
+}
+
+enum StatutMatchFinale {
+  a_jouer
+  termine
+}
+
+model PhaseFinale {
+  id               String            @id @default(uuid())
+  demiFinaleAId    String            @unique
+  demiFinaleBId    String            @unique
+  finaleCardebatId String?           @unique
+  finaleLeGallId   String?           @unique
+  statut           StatutPhaseFinale @default(en_cours)
+
+  demiFinaleA    MatchFinale  @relation("DemiFinaleA", fields: [demiFinaleAId], references: [id])
+  demiFinaleB    MatchFinale  @relation("DemiFinaleB", fields: [demiFinaleBId], references: [id])
+  finaleCardebat MatchFinale? @relation("FinaleCardebat", fields: [finaleCardebatId], references: [id])
+  finaleLeGall   MatchFinale? @relation("FinaleLeGall", fields: [finaleLeGallId], references: [id])
+
+  @@map("phase_finale")
+}
+
+enum StatutPhaseFinale {
+  en_cours
+  terminee
+}
+
+model Utilisateur {
+  id                String          @id @default(uuid())
+  providerId        String          @unique
+  provider          String
+  email             String
+  displayName       String
+  role              RoleUtilisateur @default(membre)
+  dateApparition    String
+  derniereConnexion String
+
+  @@map("utilisateur")
+}
+
+enum RoleUtilisateur {
+  admin
+  capitaine
+  membre
+}
