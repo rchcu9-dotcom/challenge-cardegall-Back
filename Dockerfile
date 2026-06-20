@@ -11,6 +11,7 @@ RUN pnpm install --frozen-lockfile --prod=false
 
 # Copy the rest of the backend and build
 COPY . .
+RUN pnpm exec prisma generate
 RUN pnpm run build
 
 # ---- Runtime ----
