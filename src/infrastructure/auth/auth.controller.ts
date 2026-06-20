@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
-import type { OAuthProfile } from '@shared/auth-passport-back';
 import { randomUUID } from 'crypto';
 import type { Request, Response } from 'express';
 import { UTILISATEUR_REPOSITORY } from '../../domain/shared/tokens';
@@ -24,6 +23,7 @@ import type { UtilisateurRepository } from '../../domain/utilisateur/repositorie
 import type { AuthTokenPayload } from '../../domain/auth/entities/auth-token-payload.entity';
 import { DevLoginDto } from './dto/dev-login.dto';
 import { GoogleConfiguredGuard } from './google-configured.guard';
+import type { GoogleProfile } from './strategies/google.strategy';
 
 @Controller('auth')
 export class AuthController {
@@ -45,7 +45,7 @@ export class AuthController {
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
-    const profile = req.user as OAuthProfile;
+    const profile = req.user as GoogleProfile;
     const utilisateur = await this.upsertUtilisateur(
       profile.providerId,
       'google',
