@@ -22,9 +22,6 @@ import { PrismaModule } from './infrastructure/persistence/prisma/prisma.module'
     FinaleModule,
   ],
   controllers: [AppController],
-  providers: [
-    AppService,
-    { provide: APP_GUARD, useClass: AdminGuard },
-  ],
+  providers: [AppService, { provide: APP_GUARD, useClass: AdminGuard }],
 })
 export class AppModule {}

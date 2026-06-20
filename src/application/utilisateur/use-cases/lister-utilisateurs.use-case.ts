@@ -6,7 +6,8 @@ import { UTILISATEUR_REPOSITORY } from '../../../domain/shared/tokens';
 @Injectable()
 export class ListerUtilisateursUseCase {
   constructor(
-    @Inject(UTILISATEUR_REPOSITORY) private readonly utilisateurs: UtilisateurRepository,
+    @Inject(UTILISATEUR_REPOSITORY)
+    private readonly utilisateurs: UtilisateurRepository,
   ) {}
 
   async execute(): Promise<Utilisateur[]> {

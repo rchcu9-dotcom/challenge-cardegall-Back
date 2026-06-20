@@ -1,4 +1,7 @@
-import { Match, StatutMatch } from '../../../domain/match/entities/match.entity';
+import {
+  Match,
+  StatutMatch,
+} from '../../../domain/match/entities/match.entity';
 
 export interface MatchDto {
   id: string;

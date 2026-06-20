@@ -4,7 +4,11 @@ import { Equipe } from '../../../domain/equipe/entities/equipe.entity';
 import type { EnrolementStateRepository } from '../../../domain/equipe/repositories/enrolement-state.repository.interface';
 import type { EquipeRepository } from '../../../domain/equipe/repositories/equipe.repository.interface';
 import type { ClockPort } from '../../../domain/shared/ports/clock.port';
-import { CLOCK, ENROLEMENT_STATE_REPOSITORY, EQUIPE_REPOSITORY } from '../../../domain/shared/tokens';
+import {
+  CLOCK,
+  ENROLEMENT_STATE_REPOSITORY,
+  EQUIPE_REPOSITORY,
+} from '../../../domain/shared/tokens';
 import { InscrireEquipeDto } from '../dto/inscrire-equipe.dto';
 
 @Injectable()
@@ -18,7 +22,9 @@ export class InscrireEquipeUseCase {
 
   async execute(dto: InscrireEquipeDto): Promise<Equipe> {
     if (await this.enrolementState.isCloture()) {
-      throw new BadRequestException('Les enrôlements sont clôturés, inscription impossible');
+      throw new BadRequestException(
+        'Les enrôlements sont clôturés, inscription impossible',
+      );
     }
 
     const equipe: Equipe = {

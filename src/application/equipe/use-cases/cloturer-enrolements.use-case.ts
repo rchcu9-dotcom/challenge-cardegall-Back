@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { ClassementEntry } from '../../../domain/classement/entities/classement-entry.entity';
 import { Equipe } from '../../../domain/equipe/entities/equipe.entity';
@@ -17,7 +22,10 @@ import {
   PLANNING_SERVICE,
   TOUR_REPOSITORY,
 } from '../../../domain/shared/tokens';
-import type { ParametresTour, Tour } from '../../../domain/tour/entities/tour.entity';
+import type {
+  ParametresTour,
+  Tour,
+} from '../../../domain/tour/entities/tour.entity';
 import type { TourRepository } from '../../../domain/tour/repositories/tour.repository.interface';
 import type { AppariementService } from '../../../domain/tour/services/appariement.service';
 
@@ -41,7 +49,8 @@ export class CloturerEnrolementsUseCase {
     @Inject(EQUIPE_REPOSITORY) private readonly equipes: EquipeRepository,
     @Inject(ENROLEMENT_STATE_REPOSITORY)
     private readonly enrolementState: EnrolementStateRepository,
-    @Inject(APPARIEMENT_SERVICE) private readonly appariementService: AppariementService,
+    @Inject(APPARIEMENT_SERVICE)
+    private readonly appariementService: AppariementService,
     @Inject(PLANNING_SERVICE) private readonly planningService: PlanningService,
     @Inject(TOUR_REPOSITORY) private readonly tourRepository: TourRepository,
     @Inject(MATCH_REPOSITORY) private readonly matchRepository: MatchRepository,
@@ -67,25 +76,24 @@ export class CloturerEnrolementsUseCase {
 
     await this.enrolementState.cloturer();
 
-    const classementInitial: ClassementEntry[] = engagees.map((equipe, index) => ({
-      equipeId: equipe.id,
-      points: 0,
-      victoires: 0,
-      nuls: 0,
-      defaites: 0,
-      butsMarques: 0,
-      butsConcedes: 0,
-      diffGenerale: 0,
-      diffParticuliere: 0,
-      nbFeminines: equipe.nbFemininesReel ?? equipe.nbFemininesEnvisage,
-      rang: index + 1,
-    }));
-
-    const { paires, becotEquipeId } = this.appariementService.genererAppariements(
-      classementInitial,
-      [],
-      [],
+    const classementInitial: ClassementEntry[] = engagees.map(
+      (equipe, index) => ({
+        equipeId: equipe.id,
+        points: 0,
+        victoires: 0,
+        nuls: 0,
+        defaites: 0,
+        butsMarques: 0,
+        butsConcedes: 0,
+        diffGenerale: 0,
+        diffParticuliere: 0,
+        nbFeminines: equipe.nbFemininesReel ?? equipe.nbFemininesEnvisage,
+        rang: index + 1,
+      }),
     );
+
+    const { paires, becotEquipeId } =
+      this.appariementService.genererAppariements(classementInitial, [], []);
 
     const nouveauTourId = randomUUID();
     const nouveauTour: Tour = {
@@ -96,19 +104,21 @@ export class CloturerEnrolementsUseCase {
       equipesBecot: becotEquipeId ? [becotEquipeId] : [],
     };
 
-    const matchesAppairesSansHoraire: Match[] = paires.map(([equipeAId, equipeBId]) => ({
-      id: randomUUID(),
-      tourId: nouveauTourId,
-      equipeAId,
-      equipeBId,
-      estBye: false,
-      terrain: null,
-      heureDebutPrevue: null,
-      heureFinPrevue: null,
-      scoreA: null,
-      scoreB: null,
-      statut: 'a_jouer' as const,
-    }));
+    const matchesAppairesSansHoraire: Match[] = paires.map(
+      ([equipeAId, equipeBId]) => ({
+        id: randomUUID(),
+        tourId: nouveauTourId,
+        equipeAId,
+        equipeBId,
+        estBye: false,
+        terrain: null,
+        heureDebutPrevue: null,
+        heureFinPrevue: null,
+        scoreA: null,
+        scoreB: null,
+        statut: 'a_jouer' as const,
+      }),
+    );
 
     const matchesPlanifies = this.planningService.calculerHoraires(
       matchesAppairesSansHoraire,

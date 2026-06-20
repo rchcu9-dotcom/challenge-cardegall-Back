@@ -46,7 +46,10 @@ import { TourController } from './tour.controller';
     { provide: MATCH_FINALE_REPOSITORY, useClass: MatchFinalePrismaRepository },
     { provide: TOUR_REPOSITORY, useClass: TourPrismaRepository },
     { provide: MATCH_REPOSITORY, useClass: MatchPrismaRepository },
-    { provide: CYCLE_TOURNOI_REPOSITORY, useClass: CycleTournoiPrismaRepository },
+    {
+      provide: CYCLE_TOURNOI_REPOSITORY,
+      useClass: CycleTournoiPrismaRepository,
+    },
     { provide: APPARIEMENT_SERVICE, useClass: AppariementSuisseService },
     { provide: CLASSEMENT_SERVICE, useClass: ClassementNaiveService },
     { provide: PLANNING_SERVICE, useClass: PlanningNaiveService },

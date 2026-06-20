@@ -19,8 +19,10 @@ export class ObtenirTourCourantUseCase {
   constructor(
     @Inject(TOUR_REPOSITORY) private readonly tourRepository: TourRepository,
     @Inject(MATCH_REPOSITORY) private readonly matchRepository: MatchRepository,
-    @Inject(EQUIPE_REPOSITORY) private readonly equipeRepository: EquipeRepository,
-    @Inject(CLASSEMENT_SERVICE) private readonly classementService: ClassementService,
+    @Inject(EQUIPE_REPOSITORY)
+    private readonly equipeRepository: EquipeRepository,
+    @Inject(CLASSEMENT_SERVICE)
+    private readonly classementService: ClassementService,
   ) {}
 
   async execute(): Promise<TourCourantDto> {
@@ -31,13 +33,16 @@ export class ObtenirTourCourantUseCase {
 
     const matches = await this.matchRepository.findByTour(tour.id);
     const toutesEquipes = await this.equipeRepository.findAll();
-    const equipes = toutesEquipes.filter((equipe) => equipe.statut !== 'retiree');
+    const equipes = toutesEquipes.filter(
+      (equipe) => equipe.statut !== 'retiree',
+    );
     const tousLesMatchs = await this.matchRepository.findAll();
 
     const classement = this.classementService.calculer(equipes, tousLesMatchs);
 
     const resultatsComplets =
-      matches.length > 0 && matches.every((match) => match.statut === 'termine' || match.estBye);
+      matches.length > 0 &&
+      matches.every((match) => match.statut === 'termine' || match.estBye);
 
     return {
       tour: toTourDto(tour),

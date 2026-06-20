@@ -1,4 +1,8 @@
-import { ParametresTour, StatutTour, Tour } from '../../../domain/tour/entities/tour.entity';
+import {
+  ParametresTour,
+  StatutTour,
+  Tour,
+} from '../../../domain/tour/entities/tour.entity';
 
 export interface TourDto {
   id: string;

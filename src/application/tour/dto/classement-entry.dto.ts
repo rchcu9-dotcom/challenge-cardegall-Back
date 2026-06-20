@@ -14,6 +14,8 @@ export interface ClassementEntryDto {
   rang: number;
 }
 
-export function toClassementEntryDto(entry: ClassementEntry): ClassementEntryDto {
+export function toClassementEntryDto(
+  entry: ClassementEntry,
+): ClassementEntryDto {
   return { ...entry };
 }

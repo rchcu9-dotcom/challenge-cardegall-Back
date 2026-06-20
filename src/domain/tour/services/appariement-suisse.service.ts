@@ -24,10 +24,17 @@ export class AppariementSuisseService implements AppariementService {
   ): AppariementResult {
     const classementOrdonne = [...classement].sort((a, b) => a.rang - b.rang);
 
-    const { becotEquipeId, participants } = this.selectionnerBecot(classementOrdonne, equipesBecot);
-    const historiqueConfrontations = this.construireHistoriqueConfrontations(historiqueMatchs);
+    const { becotEquipeId, participants } = this.selectionnerBecot(
+      classementOrdonne,
+      equipesBecot,
+    );
+    const historiqueConfrontations =
+      this.construireHistoriqueConfrontations(historiqueMatchs);
     const paireBase = this.appliquerAppariementBase(participants);
-    const paires = this.resoudreConflitsRematch(paireBase, historiqueConfrontations);
+    const paires = this.resoudreConflitsRematch(
+      paireBase,
+      historiqueConfrontations,
+    );
 
     return { paires, becotEquipeId };
   }
@@ -63,7 +70,9 @@ export class AppariementSuisseService implements AppariementService {
       .find((entry) => !historiquePertinent.includes(entry.equipeId));
 
     const becot = candidat ?? classementOrdonne[classementOrdonne.length - 1];
-    const participants = classementOrdonne.filter((entry) => entry.equipeId !== becot.equipeId);
+    const participants = classementOrdonne.filter(
+      (entry) => entry.equipeId !== becot.equipeId,
+    );
 
     return { becotEquipeId: becot.equipeId, participants };
   }
@@ -73,7 +82,9 @@ export class AppariementSuisseService implements AppariementService {
    * du tournoi), à partir des matchs `estBye: false`. Clé normalisée
    * `"equipeA|equipeB"` indépendante de l'ordre des deux équipes.
    */
-  private construireHistoriqueConfrontations(historiqueMatchs: Match[]): Set<string> {
+  private construireHistoriqueConfrontations(
+    historiqueMatchs: Match[],
+  ): Set<string> {
     const historique = new Set<string>();
 
     for (const match of historiqueMatchs) {
@@ -87,7 +98,9 @@ export class AppariementSuisseService implements AppariementService {
   }
 
   /** Appariement strict 1v2, 3v4, ... sur la liste de participants ordonnée par rang. */
-  private appliquerAppariementBase(participants: ClassementEntry[]): Array<[string, string]> {
+  private appliquerAppariementBase(
+    participants: ClassementEntry[],
+  ): Array<[string, string]> {
     const paires: Array<[string, string]> = [];
     for (let i = 0; i < participants.length; i += 2) {
       paires.push([participants[i].equipeId, participants[i + 1].equipeId]);
@@ -114,7 +127,9 @@ export class AppariementSuisseService implements AppariementService {
     for (let i = 0; i < resultat.length; i++) {
       const [equipeA, equipeB] = resultat[i];
 
-      if (!historiqueConfrontations.has(this.cleConfrontation(equipeA, equipeB))) {
+      if (
+        !historiqueConfrontations.has(this.cleConfrontation(equipeA, equipeB))
+      ) {
         continue;
       }
 
@@ -130,10 +145,16 @@ export class AppariementSuisseService implements AppariementService {
       const nouvellePaireSuivante: [string, string] = [equipeB, equipeD];
 
       const conflitCourant = historiqueConfrontations.has(
-        this.cleConfrontation(nouvellePaireCourante[0], nouvellePaireCourante[1]),
+        this.cleConfrontation(
+          nouvellePaireCourante[0],
+          nouvellePaireCourante[1],
+        ),
       );
       const conflitSuivant = historiqueConfrontations.has(
-        this.cleConfrontation(nouvellePaireSuivante[0], nouvellePaireSuivante[1]),
+        this.cleConfrontation(
+          nouvellePaireSuivante[0],
+          nouvellePaireSuivante[1],
+        ),
       );
 
       if (!conflitCourant && !conflitSuivant) {

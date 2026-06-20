@@ -7,5 +7,9 @@ export interface PlanningService {
    * d'un tour, à partir des paramètres du tour et de l'heure courante. Implémentation
    * à fournir par la spec `planning-terrains`.
    */
-  calculerHoraires(matches: Match[], parametres: ParametresTour, maintenant: Date): Match[];
+  calculerHoraires(
+    matches: Match[],
+    parametres: ParametresTour,
+    maintenant: Date,
+  ): Match[];
 }

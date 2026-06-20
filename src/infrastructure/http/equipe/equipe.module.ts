@@ -34,7 +34,10 @@ import { EquipeController } from './equipe.controller';
     ReordonnerEquipesUseCase,
     CloturerEnrolementsUseCase,
     { provide: EQUIPE_REPOSITORY, useClass: EquipePrismaRepository },
-    { provide: ENROLEMENT_STATE_REPOSITORY, useClass: EnrolementStatePrismaRepository },
+    {
+      provide: ENROLEMENT_STATE_REPOSITORY,
+      useClass: EnrolementStatePrismaRepository,
+    },
     { provide: TOUR_REPOSITORY, useClass: TourPrismaRepository },
     { provide: MATCH_REPOSITORY, useClass: MatchPrismaRepository },
     { provide: APPARIEMENT_SERVICE, useClass: AppariementSuisseService },

@@ -31,6 +31,10 @@ export class FinaleController {
     @Param('id') id: string,
     @Body() dto: EnregistrerScoreMatchFinaleDto,
   ): Promise<PhaseFinaleDto> {
-    return this.enregistrerScoreMatchFinaleUseCase.execute(id, dto.scoreA, dto.scoreB);
+    return this.enregistrerScoreMatchFinaleUseCase.execute(
+      id,
+      dto.scoreA,
+      dto.scoreB,
+    );
   }
 }

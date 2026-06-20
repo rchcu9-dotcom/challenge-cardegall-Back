@@ -5,7 +5,9 @@ import { EQUIPE_REPOSITORY } from '../../../domain/shared/tokens';
 
 @Injectable()
 export class ListerEquipesUseCase {
-  constructor(@Inject(EQUIPE_REPOSITORY) private readonly equipes: EquipeRepository) {}
+  constructor(
+    @Inject(EQUIPE_REPOSITORY) private readonly equipes: EquipeRepository,
+  ) {}
 
   async execute(): Promise<Equipe[]> {
     return this.equipes.findAll();

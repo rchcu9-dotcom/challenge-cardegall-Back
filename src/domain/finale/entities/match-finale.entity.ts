@@ -1,4 +1,8 @@
-export type TypeMatchFinale = 'demi_finale_a' | 'demi_finale_b' | 'finale_cardebat' | 'finale_le_gall';
+export type TypeMatchFinale =
+  | 'demi_finale_a'
+  | 'demi_finale_b'
+  | 'finale_cardebat'
+  | 'finale_le_gall';
 export type StatutMatchFinale = 'a_jouer' | 'termine';
 
 export interface MatchFinale {

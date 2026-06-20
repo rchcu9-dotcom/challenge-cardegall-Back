@@ -14,11 +14,17 @@ import { GoogleStrategy } from './strategies/google.strategy';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'dev-secret-non-securise-a-changer',
-      signOptions: { expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as `${number}${'d' | 'h' | 'm' | 's'}` },
+      signOptions: {
+        expiresIn: (process.env.JWT_EXPIRES_IN ||
+          '7d') as `${number}${'d' | 'h' | 'm' | 's'}`,
+      },
     }),
   ],
   controllers: [AuthController],
-  providers: [GoogleStrategy, { provide: AUTH_SERVICE, useClass: JwtAuthService }],
+  providers: [
+    GoogleStrategy,
+    { provide: AUTH_SERVICE, useClass: JwtAuthService },
+  ],
   exports: [AUTH_SERVICE],
 })
 export class AuthModule {}

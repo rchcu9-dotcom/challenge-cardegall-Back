@@ -10,7 +10,10 @@ import { Reflector } from '@nestjs/core';
 import { randomUUID } from 'crypto';
 import type { Request } from 'express';
 import type { AuthServicePort } from '../../../domain/auth/ports/auth-service.port';
-import { AUTH_SERVICE, UTILISATEUR_REPOSITORY } from '../../../domain/shared/tokens';
+import {
+  AUTH_SERVICE,
+  UTILISATEUR_REPOSITORY,
+} from '../../../domain/shared/tokens';
 import type { ProviderUtilisateur } from '../../../domain/utilisateur/entities/utilisateur.entity';
 import type { UtilisateurRepository } from '../../../domain/utilisateur/repositories/utilisateur.repository.interface';
 import { REQUIRE_ADMIN_KEY } from './require-admin.decorator';
@@ -20,14 +23,15 @@ export class AdminGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     @Inject(AUTH_SERVICE) private readonly authService: AuthServicePort,
-    @Inject(UTILISATEUR_REPOSITORY) private readonly utilisateurRepository: UtilisateurRepository,
+    @Inject(UTILISATEUR_REPOSITORY)
+    private readonly utilisateurRepository: UtilisateurRepository,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const requireAdmin = this.reflector.getAllAndOverride<boolean>(REQUIRE_ADMIN_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ]);
+    const requireAdmin = this.reflector.getAllAndOverride<boolean>(
+      REQUIRE_ADMIN_KEY,
+      [context.getHandler(), context.getClass()],
+    );
     if (!requireAdmin) return true;
 
     const token = this.extractBearer(context);
@@ -38,7 +42,9 @@ export class AdminGuard implements CanActivate {
 
     // Auto-provisioning (AC-2 / AC-3) : upsert à chaque requête admin authentifiée.
     const now = new Date().toISOString();
-    const existing = await this.utilisateurRepository.findByProviderId(payload.uid);
+    const existing = await this.utilisateurRepository.findByProviderId(
+      payload.uid,
+    );
 
     if (!existing) {
       await this.utilisateurRepository.save({
@@ -52,10 +58,15 @@ export class AdminGuard implements CanActivate {
         derniereConnexion: now,
       });
     } else {
-      await this.utilisateurRepository.save({ ...existing, derniereConnexion: now });
+      await this.utilisateurRepository.save({
+        ...existing,
+        derniereConnexion: now,
+      });
     }
 
-    const user = existing ?? (await this.utilisateurRepository.findByProviderId(payload.uid));
+    const user =
+      existing ??
+      (await this.utilisateurRepository.findByProviderId(payload.uid));
     if (!user || user.role !== 'admin') throw new ForbiddenException();
     return true;
   }

@@ -117,8 +117,12 @@ export class ClassementNaiveService implements ClassementService {
           continue;
         }
 
-        butsMarquesParticulier += estA ? (match.scoreA as number) : (match.scoreB as number);
-        butsConcedesParticulier += estA ? (match.scoreB as number) : (match.scoreA as number);
+        butsMarquesParticulier += estA
+          ? (match.scoreA as number)
+          : (match.scoreB as number);
+        butsConcedesParticulier += estA
+          ? (match.scoreB as number)
+          : (match.scoreA as number);
       }
 
       entry.diffParticuliere = butsMarquesParticulier - butsConcedesParticulier;

@@ -12,14 +12,23 @@ import { PlanningService } from './planning.service';
  */
 @Injectable()
 export class PlanningNaiveService implements PlanningService {
-  calculerHoraires(matches: Match[], parametres: ParametresTour, maintenant: Date): Match[] {
-    const debut = new Date(maintenant.getTime() + parametres.delaiDemarrageMinutes * 60_000);
+  calculerHoraires(
+    matches: Match[],
+    parametres: ParametresTour,
+    maintenant: Date,
+  ): Match[] {
+    const debut = new Date(
+      maintenant.getTime() + parametres.delaiDemarrageMinutes * 60_000,
+    );
     const finsParTerrain = new Map<string, Date>();
 
     return matches.map((match, index) => {
-      const terrain = parametres.nomsTerrains[index % parametres.nomsTerrains.length];
+      const terrain =
+        parametres.nomsTerrains[index % parametres.nomsTerrains.length];
       const heureDebut = finsParTerrain.get(terrain) ?? debut;
-      const heureFin = new Date(heureDebut.getTime() + parametres.dureeMatchMinutes * 60_000);
+      const heureFin = new Date(
+        heureDebut.getTime() + parametres.dureeMatchMinutes * 60_000,
+      );
 
       finsParTerrain.set(
         terrain,

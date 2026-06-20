@@ -1,6 +1,17 @@
-import { Body, Controller, Get, Inject, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { EnrolerEquipeDto } from '../../../application/equipe/dto/enroler-equipe.dto';
-import { EquipeDto, toEquipeDto } from '../../../application/equipe/dto/equipe.dto';
+import {
+  EquipeDto,
+  toEquipeDto,
+} from '../../../application/equipe/dto/equipe.dto';
 import { InscrireEquipeDto } from '../../../application/equipe/dto/inscrire-equipe.dto';
 import { ReordonnerEquipesDto } from '../../../application/equipe/dto/reordonner-equipes.dto';
 import { CloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/cloturer-enrolements.use-case';
@@ -10,7 +21,10 @@ import { ListerEquipesUseCase } from '../../../application/equipe/use-cases/list
 import { ReordonnerEquipesUseCase } from '../../../application/equipe/use-cases/reordonner-equipes.use-case';
 import type { EnrolementStateRepository } from '../../../domain/equipe/repositories/enrolement-state.repository.interface';
 import type { EquipeRepository } from '../../../domain/equipe/repositories/equipe.repository.interface';
-import { ENROLEMENT_STATE_REPOSITORY, EQUIPE_REPOSITORY } from '../../../domain/shared/tokens';
+import {
+  ENROLEMENT_STATE_REPOSITORY,
+  EQUIPE_REPOSITORY,
+} from '../../../domain/shared/tokens';
 import { RequireAdmin } from '../shared/require-admin.decorator';
 
 @Controller('equipes')
@@ -21,7 +35,8 @@ export class EquipeController {
     private readonly enrolerEquipeUseCase: EnrolerEquipeUseCase,
     private readonly reordonnerEquipesUseCase: ReordonnerEquipesUseCase,
     private readonly cloturerEnrolementsUseCase: CloturerEnrolementsUseCase,
-    @Inject(EQUIPE_REPOSITORY) private readonly equipeRepository: EquipeRepository,
+    @Inject(EQUIPE_REPOSITORY)
+    private readonly equipeRepository: EquipeRepository,
     @Inject(ENROLEMENT_STATE_REPOSITORY)
     private readonly enrolementStateRepository: EnrolementStateRepository,
   ) {}
@@ -51,7 +66,10 @@ export class EquipeController {
 
   @Patch(':id/enroler')
   @RequireAdmin()
-  async enroler(@Param('id') id: string, @Body() dto: EnrolerEquipeDto): Promise<EquipeDto> {
+  async enroler(
+    @Param('id') id: string,
+    @Body() dto: EnrolerEquipeDto,
+  ): Promise<EquipeDto> {
     const equipe = await this.enrolerEquipeUseCase.execute(id, dto);
     return toEquipeDto(equipe);
   }
@@ -67,6 +85,9 @@ export class EquipeController {
   @RequireAdmin()
   async cloturer(): Promise<{ equipes: EquipeDto[]; cloture: true }> {
     const result = await this.cloturerEnrolementsUseCase.execute();
-    return { equipes: result.equipes.map(toEquipeDto), cloture: result.cloture };
+    return {
+      equipes: result.equipes.map(toEquipeDto),
+      cloture: result.cloture,
+    };
   }
 }

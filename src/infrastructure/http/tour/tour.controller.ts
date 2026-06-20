@@ -1,6 +1,9 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { EnregistrerScoreMatchDto } from '../../../application/tour/dto/enregistrer-score-match.dto';
-import { TerminerTourDto, TerminerTourResultDto } from '../../../application/tour/dto/terminer-tour.dto';
+import {
+  TerminerTourDto,
+  TerminerTourResultDto,
+} from '../../../application/tour/dto/terminer-tour.dto';
 import { TourCourantDto } from '../../../application/tour/dto/tour-courant.dto';
 import { EnregistrerScoreMatchUseCase } from '../../../application/tour/use-cases/enregistrer-score-match.use-case';
 import { ObtenirTourCourantUseCase } from '../../../application/tour/use-cases/obtenir-tour-courant.use-case';
@@ -32,6 +35,10 @@ export class TourController {
     @Param('id') id: string,
     @Body() dto: EnregistrerScoreMatchDto,
   ): Promise<TourCourantDto> {
-    return this.enregistrerScoreMatchUseCase.execute(id, dto.scoreA, dto.scoreB);
+    return this.enregistrerScoreMatchUseCase.execute(
+      id,
+      dto.scoreA,
+      dto.scoreB,
+    );
   }
 }

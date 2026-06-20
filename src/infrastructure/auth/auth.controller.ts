@@ -29,7 +29,8 @@ import type { GoogleProfile } from './strategies/google.strategy';
 export class AuthController {
   constructor(
     private readonly jwtService: JwtService,
-    @Inject(UTILISATEUR_REPOSITORY) private readonly utilisateurRepository: UtilisateurRepository,
+    @Inject(UTILISATEUR_REPOSITORY)
+    private readonly utilisateurRepository: UtilisateurRepository,
   ) {}
 
   @Get('google')
@@ -40,7 +41,10 @@ export class AuthController {
 
   @Get('google/callback')
   @UseGuards(GoogleConfiguredGuard, AuthGuard('google'))
-  async googleCallback(@Req() req: Request, @Res() res: Response): Promise<void> {
+  async googleCallback(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
     const profile = req.user as GoogleProfile;
     const utilisateur = await this.upsertUtilisateur(
       profile.providerId,
@@ -59,11 +63,19 @@ export class AuthController {
    */
   @Post('dev-login')
   async devLogin(@Body() dto: DevLoginDto): Promise<{ token: string }> {
-    if (process.env.NODE_ENV === 'production' && process.env.ENABLE_DEV_LOGIN !== 'true') {
+    if (
+      process.env.NODE_ENV === 'production' &&
+      process.env.ENABLE_DEV_LOGIN !== 'true'
+    ) {
       throw new ForbiddenException('dev-login désactivé en production');
     }
     const providerId = `dev-${dto.email}`;
-    const utilisateur = await this.upsertUtilisateur(providerId, 'dev', dto.displayName, dto.email);
+    const utilisateur = await this.upsertUtilisateur(
+      providerId,
+      'dev',
+      dto.displayName,
+      dto.email,
+    );
     const token = await this.signToken(utilisateur);
     return { token };
   }
@@ -80,7 +92,9 @@ export class AuthController {
       throw new UnauthorizedException();
     }
 
-    const utilisateur = await this.utilisateurRepository.findByProviderId(payload.uid);
+    const utilisateur = await this.utilisateurRepository.findByProviderId(
+      payload.uid,
+    );
     if (!utilisateur) throw new UnauthorizedException();
     return utilisateur;
   }
@@ -92,9 +106,14 @@ export class AuthController {
     email?: string,
   ): Promise<Utilisateur> {
     const now = new Date().toISOString();
-    const existing = await this.utilisateurRepository.findByProviderId(providerId);
+    const existing =
+      await this.utilisateurRepository.findByProviderId(providerId);
     const bootstrapEmail = process.env.ADMIN_BOOTSTRAP_EMAIL;
-    const role = existing?.role ?? (email && bootstrapEmail && email === bootstrapEmail ? 'admin' : 'membre');
+    const role =
+      existing?.role ??
+      (email && bootstrapEmail && email === bootstrapEmail
+        ? 'admin'
+        : 'membre');
 
     return this.utilisateurRepository.save({
       id: existing?.id ?? randomUUID(),

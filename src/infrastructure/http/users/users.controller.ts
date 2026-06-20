@@ -1,6 +1,9 @@
 import { Body, Controller, Get, Param, Patch } from '@nestjs/common';
 import { ModifierRoleUtilisateurDto } from '../../../application/utilisateur/dto/modifier-role-utilisateur.dto';
-import { toUtilisateurDto, UtilisateurDto } from '../../../application/utilisateur/dto/utilisateur.dto';
+import {
+  toUtilisateurDto,
+  UtilisateurDto,
+} from '../../../application/utilisateur/dto/utilisateur.dto';
 import { ListerUtilisateursUseCase } from '../../../application/utilisateur/use-cases/lister-utilisateurs.use-case';
 import { ModifierRoleUtilisateurUseCase } from '../../../application/utilisateur/use-cases/modifier-role-utilisateur.use-case';
 import { RequireAdmin } from '../shared/require-admin.decorator';
@@ -24,7 +27,10 @@ export class UsersController {
     @Param('id') id: string,
     @Body() dto: ModifierRoleUtilisateurDto,
   ): Promise<UtilisateurDto> {
-    const utilisateur = await this.modifierRoleUtilisateurUseCase.execute(id, dto);
+    const utilisateur = await this.modifierRoleUtilisateurUseCase.execute(
+      id,
+      dto,
+    );
     return toUtilisateurDto(utilisateur);
   }
 }

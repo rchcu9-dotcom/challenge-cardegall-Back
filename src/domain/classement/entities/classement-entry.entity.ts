@@ -5,7 +5,11 @@
  * - butsMarques : meilleure attaque (total de buts marqués)
  * - nbFeminines : nombre de féminines de l'équipe
  */
-export type CritereDepartage = 'diffParticuliere' | 'diffGenerale' | 'butsMarques' | 'nbFeminines';
+export type CritereDepartage =
+  | 'diffParticuliere'
+  | 'diffGenerale'
+  | 'butsMarques'
+  | 'nbFeminines';
 
 export const ORDRE_CRITERES_DEPARTAGE: CritereDepartage[] = [
   'diffParticuliere',

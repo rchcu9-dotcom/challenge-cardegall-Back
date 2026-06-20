@@ -12,7 +12,9 @@ export class PhaseFinaleService {
   } {
     const classementTrie = [...classementFinal].sort((a, b) => a.rang - b.rang);
     if (classementTrie.length < 4) {
-      throw new Error('Classement final insuffisant pour démarrer la phase finale');
+      throw new Error(
+        'Classement final insuffisant pour démarrer la phase finale',
+      );
     }
 
     const [premier, deuxieme, troisieme, quatrieme] = classementTrie;
@@ -41,9 +43,17 @@ export class PhaseFinaleService {
   }
 
   /** scoreA !== scoreB requis (validé par le use case avant appel). */
-  determinerVainqueurEtVaincu(match: MatchFinale): { vainqueurId: string; vaincuId: string } {
+  determinerVainqueurEtVaincu(match: MatchFinale): {
+    vainqueurId: string;
+    vaincuId: string;
+  } {
     const { equipeAId, equipeBId, scoreA, scoreB } = match;
-    if (equipeAId === null || equipeBId === null || scoreA === null || scoreB === null) {
+    if (
+      equipeAId === null ||
+      equipeBId === null ||
+      scoreA === null ||
+      scoreB === null
+    ) {
       throw new Error(`Match de phase finale ${match.id} incomplet`);
     }
 

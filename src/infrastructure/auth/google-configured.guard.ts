@@ -1,4 +1,8 @@
-import { CanActivate, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  CanActivate,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { isGoogleOAuthConfigured } from './google-oauth.config';
 
 @Injectable()

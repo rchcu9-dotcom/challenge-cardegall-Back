@@ -1,4 +1,9 @@
-import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Equipe } from '../../../domain/equipe/entities/equipe.entity';
 import type { EquipeRepository } from '../../../domain/equipe/repositories/equipe.repository.interface';
 import type { ClockPort } from '../../../domain/shared/ports/clock.port';
@@ -18,12 +23,16 @@ export class EnrolerEquipeUseCase {
       throw new NotFoundException(`Équipe ${equipeId} introuvable`);
     }
     if (equipe.statut !== 'inscrite') {
-      throw new ConflictException(`L'équipe ${equipeId} n'est pas au statut "inscrite"`);
+      throw new ConflictException(
+        `L'équipe ${equipeId} n'est pas au statut "inscrite"`,
+      );
     }
 
     const enrolees = await this.equipes.findEnroleesOrdered();
     const ordreArrivee =
-      enrolees.length > 0 ? Math.max(...enrolees.map((e) => e.ordreArrivee ?? 0)) + 1 : 1;
+      enrolees.length > 0
+        ? Math.max(...enrolees.map((e) => e.ordreArrivee ?? 0)) + 1
+        : 1;
 
     return this.equipes.save({
       ...equipe,

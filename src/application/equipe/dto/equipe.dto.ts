@@ -1,4 +1,7 @@
-import { Equipe, StatutEquipe } from '../../../domain/equipe/entities/equipe.entity';
+import {
+  Equipe,
+  StatutEquipe,
+} from '../../../domain/equipe/entities/equipe.entity';
 
 export interface EquipeDto {
   id: string;
