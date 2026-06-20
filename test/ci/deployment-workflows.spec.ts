@@ -123,8 +123,8 @@ describe('back/Dockerfile', () => {
     expect(dockerfile).toMatch(/FROM node:20-alpine AS runner/);
   });
 
-  it('does not run a Prisma generate step', () => {
-    expect(dockerfile).not.toMatch(/prisma generate/i);
+  it('runs a Prisma generate step before building', () => {
+    expect(dockerfile).toMatch(/prisma generate/i);
   });
 
   it('defines a HEALTHCHECK against the /health endpoint', () => {
@@ -166,10 +166,10 @@ describe('ADR — organisation des repos Git et stratégie de déploiement', () 
     'docs/adr/2026-06-13-organisation-repos-git-et-strategie-deploiement.md',
   );
 
-  it('exists with status "Proposé"', () => {
+  it('exists with status "Accepté"', () => {
     expect(existsSync(adrPath)).toBe(true);
 
     const content = readFileSync(adrPath, 'utf-8');
-    expect(content).toMatch(/## Statut\s*\n\s*Proposé/);
+    expect(content).toMatch(/## Statut\s*\n\s*Accepté/);
   });
 });
