@@ -46,6 +46,10 @@ export class MatchPrismaRepository implements MatchRepository {
     );
     return matches;
   }
+
+  async deleteByTour(tourId: string): Promise<void> {
+    await this.prisma.match.deleteMany({ where: { tourId } });
+  }
 }
 
 function toDomain(row: MatchRow): Match {

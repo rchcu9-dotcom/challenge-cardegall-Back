@@ -53,4 +53,8 @@ export class TourInMemoryRepository implements TourRepository {
     }
     return tours.reduce((latest, tour) => (tour.numero > latest.numero ? tour : latest));
   }
+
+  async deleteById(id: string): Promise<void> {
+    this.tours.delete(id);
+  }
 }

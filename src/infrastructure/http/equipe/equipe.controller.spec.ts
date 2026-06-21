@@ -5,6 +5,7 @@ import { ListerEquipesUseCase } from '../../../application/equipe/use-cases/list
 import { EnrolerEquipeUseCase } from '../../../application/equipe/use-cases/enroler-equipe.use-case';
 import { ReordonnerEquipesUseCase } from '../../../application/equipe/use-cases/reordonner-equipes.use-case';
 import { CloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/cloturer-enrolements.use-case';
+import { DecloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/decloturer-enrolements.use-case';
 import { ENROLEMENT_STATE_REPOSITORY, EQUIPE_REPOSITORY } from '../../../domain/shared/tokens';
 import type { EquipeRepository } from '../../../domain/equipe/repositories/equipe.repository.interface';
 import type { EnrolementStateRepository } from '../../../domain/equipe/repositories/enrolement-state.repository.interface';
@@ -31,6 +32,7 @@ describe('EquipeController', () => {
   let enrolerEquipeUseCase: jest.Mocked<EnrolerEquipeUseCase>;
   let reordonnerEquipesUseCase: jest.Mocked<ReordonnerEquipesUseCase>;
   let cloturerEnrolementsUseCase: jest.Mocked<CloturerEnrolementsUseCase>;
+  let decloturerEnrolementsUseCase: jest.Mocked<DecloturerEnrolementsUseCase>;
   let equipeRepository: jest.Mocked<EquipeRepository>;
   let enrolementStateRepository: jest.Mocked<EnrolementStateRepository>;
 
@@ -44,6 +46,9 @@ describe('EquipeController', () => {
     cloturerEnrolementsUseCase = {
       execute: jest.fn(),
     } as unknown as jest.Mocked<CloturerEnrolementsUseCase>;
+    decloturerEnrolementsUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<DecloturerEnrolementsUseCase>;
     equipeRepository = {
       findAll: jest.fn(),
       findById: jest.fn(),
@@ -54,6 +59,7 @@ describe('EquipeController', () => {
     enrolementStateRepository = {
       isCloture: jest.fn(),
       cloturer: jest.fn(),
+      decloturer: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -64,6 +70,7 @@ describe('EquipeController', () => {
         { provide: EnrolerEquipeUseCase, useValue: enrolerEquipeUseCase },
         { provide: ReordonnerEquipesUseCase, useValue: reordonnerEquipesUseCase },
         { provide: CloturerEnrolementsUseCase, useValue: cloturerEnrolementsUseCase },
+        { provide: DecloturerEnrolementsUseCase, useValue: decloturerEnrolementsUseCase },
         { provide: EQUIPE_REPOSITORY, useValue: equipeRepository },
         { provide: ENROLEMENT_STATE_REPOSITORY, useValue: enrolementStateRepository },
       ],
@@ -149,5 +156,18 @@ describe('EquipeController', () => {
     expect(cloturerEnrolementsUseCase.execute).toHaveBeenCalledTimes(1);
     expect(result.cloture).toBe(true);
     expect(result.equipes[0].statut).toBe('engagee');
+  });
+
+  it('POST /equipes/decloturer-enrolements délègue à DecloturerEnrolementsUseCase', async () => {
+    decloturerEnrolementsUseCase.execute.mockResolvedValue({
+      equipes: [buildEquipe({ statut: 'enrolee' })],
+      cloture: false,
+    });
+
+    const result = await controller.decloturer();
+
+    expect(decloturerEnrolementsUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(result.cloture).toBe(false);
+    expect(result.equipes[0].statut).toBe('enrolee');
   });
 });

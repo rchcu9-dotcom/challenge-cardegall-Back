@@ -25,4 +25,11 @@ export class EnrolementStatePrismaRepository implements EnrolementStateRepositor
       update: { enrolementsClotures: true },
     });
   }
+
+  async decloturer(): Promise<void> {
+    await this.prisma.tournoiEtat.update({
+      where: { id: TOURNOI_ETAT_ID },
+      data: { enrolementsClotures: false },
+    });
+  }
 }

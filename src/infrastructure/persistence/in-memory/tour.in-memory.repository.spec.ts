@@ -64,4 +64,23 @@ describe('TourInMemoryRepository', () => {
     expect(updated.statut).toBe('termine');
     expect(await repo.findById(tour1.id)).toMatchObject({ statut: 'termine' });
   });
+
+  it('deleteById supprime le tour correspondant', async () => {
+    const repo = new TourInMemoryRepository();
+    const [tour1] = await repo.findAll();
+
+    await repo.deleteById(tour1.id);
+
+    expect(await repo.findById(tour1.id)).toBeNull();
+    expect(await repo.findAll()).toEqual([]);
+  });
+
+  it('deleteById est sans effet sur un identifiant inconnu', async () => {
+    const repo = new TourInMemoryRepository();
+    const [tour1] = await repo.findAll();
+
+    await repo.deleteById('inconnu');
+
+    expect(await repo.findAll()).toHaveLength(1);
+  });
 });

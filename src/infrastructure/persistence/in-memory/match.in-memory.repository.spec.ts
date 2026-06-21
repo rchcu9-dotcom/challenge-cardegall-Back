@@ -110,6 +110,42 @@ describe('MatchInMemoryRepository', () => {
     expect(await matchRepository.findByTour(tour1!.id)).toHaveLength(3);
   });
 
+  it('deleteByTour supprime tous les matchs du tour demandé (après seed)', async () => {
+    const { tourRepository, matchRepository } = buildRepo();
+    const tour1 = await tourRepository.findCurrent();
+    await matchRepository.findAll();
+
+    await matchRepository.deleteByTour(tour1!.id);
+
+    expect(await matchRepository.findByTour(tour1!.id)).toEqual([]);
+    expect(await matchRepository.findAll()).toEqual([]);
+  });
+
+  it('deleteByTour ne touche pas aux matchs des autres tours', async () => {
+    const { tourRepository, matchRepository } = buildRepo();
+    const tour1 = await tourRepository.findCurrent();
+    await matchRepository.saveMany([
+      {
+        id: 'nouveau-match-1',
+        tourId: 'tour-2',
+        equipeAId: 'equipe-x',
+        equipeBId: 'equipe-y',
+        estBye: false,
+        terrain: null,
+        heureDebutPrevue: null,
+        heureFinPrevue: null,
+        scoreA: null,
+        scoreB: null,
+        statut: 'a_jouer' as const,
+      },
+    ]);
+
+    await matchRepository.deleteByTour(tour1!.id);
+
+    expect(await matchRepository.findByTour(tour1!.id)).toEqual([]);
+    expect(await matchRepository.findByTour('tour-2')).toHaveLength(1);
+  });
+
   it('ne seed aucun match si aucun tour courant n\'existe', async () => {
     const equipeRepository = new EquipeInMemoryRepository();
     const tourRepository = new TourInMemoryRepository();

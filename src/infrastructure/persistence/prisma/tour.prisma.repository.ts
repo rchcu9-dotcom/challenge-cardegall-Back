@@ -40,6 +40,10 @@ export class TourPrismaRepository implements TourRepository {
     const tour = await this.prisma.tour.findFirst({ orderBy: { numero: 'desc' } });
     return tour ? toDomain(tour) : null;
   }
+
+  async deleteById(id: string): Promise<void> {
+    await this.prisma.tour.delete({ where: { id } });
+  }
 }
 
 function toDomain(row: TourRow): Tour {

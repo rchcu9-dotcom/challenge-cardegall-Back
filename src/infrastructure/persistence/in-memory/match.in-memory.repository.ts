@@ -80,4 +80,13 @@ export class MatchInMemoryRepository implements MatchRepository {
     }
     return matches;
   }
+
+  async deleteByTour(tourId: string): Promise<void> {
+    await this.ensureSeed();
+    for (const [id, match] of this.matches) {
+      if (match.tourId === tourId) {
+        this.matches.delete(id);
+      }
+    }
+  }
 }

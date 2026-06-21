@@ -10,6 +10,7 @@ describe('EnrolementStatePrismaRepository', () => {
       tournoiEtat: {
         findUnique: jest.fn(),
         upsert: jest.fn(),
+        update: jest.fn(),
       },
     };
     repository = new EnrolementStatePrismaRepository(prisma as unknown as PrismaService);
@@ -49,6 +50,19 @@ describe('EnrolementStatePrismaRepository', () => {
         where: { id: 1 },
         create: { id: 1, enrolementsClotures: true },
         update: { enrolementsClotures: true },
+      });
+    });
+  });
+
+  describe('decloturer', () => {
+    it('met à jour la ligne id=1 avec enrolementsClotures: false', async () => {
+      prisma.tournoiEtat.update.mockResolvedValue({});
+
+      await repository.decloturer();
+
+      expect(prisma.tournoiEtat.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { enrolementsClotures: false },
       });
     });
   });

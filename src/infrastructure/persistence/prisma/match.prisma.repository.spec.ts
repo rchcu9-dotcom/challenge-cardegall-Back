@@ -46,6 +46,7 @@ describe('MatchPrismaRepository', () => {
         findMany: jest.fn(),
         findUnique: jest.fn(),
         upsert: jest.fn(),
+        deleteMany: jest.fn(),
       },
       $transaction: jest.fn(),
     };
@@ -153,6 +154,16 @@ describe('MatchPrismaRepository', () => {
 
       expect(prisma.$transaction).toHaveBeenCalledWith([]);
       expect(result).toEqual([]);
+    });
+  });
+
+  describe('deleteByTour', () => {
+    it('appelle prisma.match.deleteMany({ where: { tourId } })', async () => {
+      prisma.match.deleteMany.mockResolvedValue({ count: 2 });
+
+      await repository.deleteByTour('tour-1');
+
+      expect(prisma.match.deleteMany).toHaveBeenCalledWith({ where: { tourId: 'tour-1' } });
     });
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "challenge-cardegall-backend",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "",
   "author": "",
   "private": true,
@@ -17,7 +17,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "audit:specs": "ts-node scripts/audit-specs-status.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.26",

@@ -12,4 +12,8 @@ export class EnrolementStateInMemoryRepository implements EnrolementStateReposit
   async cloturer(): Promise<void> {
     this.cloture = true;
   }
+
+  async decloturer(): Promise<void> {
+    this.cloture = false;
+  }
 }

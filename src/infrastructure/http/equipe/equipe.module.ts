@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/cloturer-enrolements.use-case';
+import { DecloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/decloturer-enrolements.use-case';
 import { EnrolerEquipeUseCase } from '../../../application/equipe/use-cases/enroler-equipe.use-case';
 import { InscrireEquipeUseCase } from '../../../application/equipe/use-cases/inscrire-equipe.use-case';
 import { ListerEquipesUseCase } from '../../../application/equipe/use-cases/lister-equipes.use-case';
@@ -33,6 +34,7 @@ import { EquipeController } from './equipe.controller';
     EnrolerEquipeUseCase,
     ReordonnerEquipesUseCase,
     CloturerEnrolementsUseCase,
+    DecloturerEnrolementsUseCase,
     { provide: EQUIPE_REPOSITORY, useClass: EquipePrismaRepository },
     {
       provide: ENROLEMENT_STATE_REPOSITORY,

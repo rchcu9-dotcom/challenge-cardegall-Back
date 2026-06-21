@@ -10,4 +10,14 @@ describe('EnrolementStateInMemoryRepository', () => {
 
     expect(await repo.isCloture()).toBe(true);
   });
+
+  it('decloturer() repasse isCloture() à false après une clôture', async () => {
+    const repo = new EnrolementStateInMemoryRepository();
+    await repo.cloturer();
+    expect(await repo.isCloture()).toBe(true);
+
+    await repo.decloturer();
+
+    expect(await repo.isCloture()).toBe(false);
+  });
 });

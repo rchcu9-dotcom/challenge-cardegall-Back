@@ -44,6 +44,7 @@ describe('TourPrismaRepository', () => {
         findUnique: jest.fn(),
         findFirst: jest.fn(),
         upsert: jest.fn(),
+        delete: jest.fn(),
       },
     };
     repository = new TourPrismaRepository(prisma as unknown as PrismaService);
@@ -147,6 +148,16 @@ describe('TourPrismaRepository', () => {
       prisma.tour.findFirst.mockResolvedValue(null);
 
       expect(await repository.findLast()).toBeNull();
+    });
+  });
+
+  describe('deleteById', () => {
+    it('appelle prisma.tour.delete({ where: { id } })', async () => {
+      prisma.tour.delete.mockResolvedValue(buildTourRow());
+
+      await repository.deleteById('tour-1');
+
+      expect(prisma.tour.delete).toHaveBeenCalledWith({ where: { id: 'tour-1' } });
     });
   });
 });

@@ -15,6 +15,7 @@ import {
 import { InscrireEquipeDto } from '../../../application/equipe/dto/inscrire-equipe.dto';
 import { ReordonnerEquipesDto } from '../../../application/equipe/dto/reordonner-equipes.dto';
 import { CloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/cloturer-enrolements.use-case';
+import { DecloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/decloturer-enrolements.use-case';
 import { EnrolerEquipeUseCase } from '../../../application/equipe/use-cases/enroler-equipe.use-case';
 import { InscrireEquipeUseCase } from '../../../application/equipe/use-cases/inscrire-equipe.use-case';
 import { ListerEquipesUseCase } from '../../../application/equipe/use-cases/lister-equipes.use-case';
@@ -35,6 +36,7 @@ export class EquipeController {
     private readonly enrolerEquipeUseCase: EnrolerEquipeUseCase,
     private readonly reordonnerEquipesUseCase: ReordonnerEquipesUseCase,
     private readonly cloturerEnrolementsUseCase: CloturerEnrolementsUseCase,
+    private readonly decloturerEnrolementsUseCase: DecloturerEnrolementsUseCase,
     @Inject(EQUIPE_REPOSITORY)
     private readonly equipeRepository: EquipeRepository,
     @Inject(ENROLEMENT_STATE_REPOSITORY)
@@ -85,6 +87,16 @@ export class EquipeController {
   @RequireAdmin()
   async cloturer(): Promise<{ equipes: EquipeDto[]; cloture: true }> {
     const result = await this.cloturerEnrolementsUseCase.execute();
+    return {
+      equipes: result.equipes.map(toEquipeDto),
+      cloture: result.cloture,
+    };
+  }
+
+  @Post('decloturer-enrolements')
+  @RequireAdmin()
+  async decloturer(): Promise<{ equipes: EquipeDto[]; cloture: false }> {
+    const result = await this.decloturerEnrolementsUseCase.execute();
     return {
       equipes: result.equipes.map(toEquipeDto),
       cloture: result.cloture,
