@@ -4,12 +4,14 @@ import { InscrireEquipeUseCase } from '../../../application/equipe/use-cases/ins
 import { ListerEquipesUseCase } from '../../../application/equipe/use-cases/lister-equipes.use-case';
 import { EnrolerEquipeUseCase } from '../../../application/equipe/use-cases/enroler-equipe.use-case';
 import { ReordonnerEquipesUseCase } from '../../../application/equipe/use-cases/reordonner-equipes.use-case';
+import { CalculerPlanningProvisoireUseCase } from '../../../application/equipe/use-cases/calculer-planning-provisoire.use-case';
 import { CloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/cloturer-enrolements.use-case';
 import { DecloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/decloturer-enrolements.use-case';
 import { ENROLEMENT_STATE_REPOSITORY, EQUIPE_REPOSITORY } from '../../../domain/shared/tokens';
 import type { EquipeRepository } from '../../../domain/equipe/repositories/equipe.repository.interface';
 import type { EnrolementStateRepository } from '../../../domain/equipe/repositories/enrolement-state.repository.interface';
 import { Equipe } from '../../../domain/equipe/entities/equipe.entity';
+import { Tour } from '../../../domain/tour/entities/tour.entity';
 
 function buildEquipe(overrides: Partial<Equipe> = {}): Equipe {
   return {
@@ -25,6 +27,22 @@ function buildEquipe(overrides: Partial<Equipe> = {}): Equipe {
   };
 }
 
+function buildTour(overrides: Partial<Tour> = {}): Tour {
+  return {
+    id: 'tour-1',
+    numero: 1,
+    statut: 'en_cours',
+    parametres: {
+      nomsTerrains: ['A', 'B'],
+      dureeMatchMinutes: 10,
+      latenceMinutes: 2,
+      delaiDemarrageMinutes: 3,
+    },
+    equipesBecot: [],
+    ...overrides,
+  };
+}
+
 describe('EquipeController', () => {
   let controller: EquipeController;
   let inscrireEquipeUseCase: jest.Mocked<InscrireEquipeUseCase>;
@@ -33,6 +51,7 @@ describe('EquipeController', () => {
   let reordonnerEquipesUseCase: jest.Mocked<ReordonnerEquipesUseCase>;
   let cloturerEnrolementsUseCase: jest.Mocked<CloturerEnrolementsUseCase>;
   let decloturerEnrolementsUseCase: jest.Mocked<DecloturerEnrolementsUseCase>;
+  let calculerPlanningProvisoireUseCase: jest.Mocked<CalculerPlanningProvisoireUseCase>;
   let equipeRepository: jest.Mocked<EquipeRepository>;
   let enrolementStateRepository: jest.Mocked<EnrolementStateRepository>;
 
@@ -49,6 +68,9 @@ describe('EquipeController', () => {
     decloturerEnrolementsUseCase = {
       execute: jest.fn(),
     } as unknown as jest.Mocked<DecloturerEnrolementsUseCase>;
+    calculerPlanningProvisoireUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<CalculerPlanningProvisoireUseCase>;
     equipeRepository = {
       findAll: jest.fn(),
       findById: jest.fn(),
@@ -71,6 +93,10 @@ describe('EquipeController', () => {
         { provide: ReordonnerEquipesUseCase, useValue: reordonnerEquipesUseCase },
         { provide: CloturerEnrolementsUseCase, useValue: cloturerEnrolementsUseCase },
         { provide: DecloturerEnrolementsUseCase, useValue: decloturerEnrolementsUseCase },
+        {
+          provide: CalculerPlanningProvisoireUseCase,
+          useValue: calculerPlanningProvisoireUseCase,
+        },
         { provide: EQUIPE_REPOSITORY, useValue: equipeRepository },
         { provide: ENROLEMENT_STATE_REPOSITORY, useValue: enrolementStateRepository },
       ],
@@ -93,6 +119,7 @@ describe('EquipeController', () => {
       nom: 'Logistique',
       capitaineUserId: 'demo-logistique',
       capitainePseudo: 'CapiLogistique',
+      capitaineEmail: 'capitaine.logistique@orange.com',
       nbJoueursApprox: 8,
       nbFemininesEnvisage: 2,
     };
@@ -169,5 +196,14 @@ describe('EquipeController', () => {
     expect(decloturerEnrolementsUseCase.execute).toHaveBeenCalledTimes(1);
     expect(result.cloture).toBe(false);
     expect(result.equipes[0].statut).toBe('enrolee');
+  });
+
+  it('POST /equipes/calculer-planning-provisoire délègue à CalculerPlanningProvisoireUseCase et retourne le TourDto', async () => {
+    calculerPlanningProvisoireUseCase.execute.mockResolvedValue(buildTour());
+
+    const result = await controller.calculerPlanningProvisoire();
+
+    expect(calculerPlanningProvisoireUseCase.execute).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(buildTour());
   });
 });

@@ -16,6 +16,7 @@ model Equipe {
   nom                 String
   capitaineUserId     String
   capitainePseudo     String?
+  capitaineEmail      String?
   nbJoueursApprox     Int
   nbFemininesEnvisage Int
   commentaire         String?

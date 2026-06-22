@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { DemarrerPhaseFinaleUseCase } from '../../../application/finale/use-cases/demarrer-phase-finale.use-case';
 import { EnregistrerScoreMatchUseCase } from '../../../application/tour/use-cases/enregistrer-score-match.use-case';
 import { ObtenirTourCourantUseCase } from '../../../application/tour/use-cases/obtenir-tour-courant.use-case';
+import { ReorganiserPlanningUseCase } from '../../../application/tour/use-cases/reorganiser-planning.use-case';
 import { TerminerTourUseCase } from '../../../application/tour/use-cases/terminer-tour.use-case';
 import { ClassementNaiveService } from '../../../domain/classement/services/classement-naive.service';
 import { PhaseFinaleService } from '../../../domain/finale/services/phase-finale.service';
@@ -38,6 +39,7 @@ import { TourController } from './tour.controller';
     ObtenirTourCourantUseCase,
     TerminerTourUseCase,
     EnregistrerScoreMatchUseCase,
+    ReorganiserPlanningUseCase,
     // DemarrerPhaseFinaleUseCase et ses dépendances finale/* sont dupliquées ici (cf. FinaleModule) :
     // TourModule ne peut pas importer FinaleModule, qui importe déjà TourModule (CYCLE_TOURNOI_REPOSITORY).
     DemarrerPhaseFinaleUseCase,

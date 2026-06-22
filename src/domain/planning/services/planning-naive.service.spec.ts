@@ -153,3 +153,116 @@ describe('PlanningNaiveService', () => {
     expect(planifie).toMatchObject({ id: 'match-1', equipeAId: 'equipe-1', equipeBId: 'equipe-2' });
   });
 });
+
+describe('PlanningNaiveService.recalculerHorairesManuel', () => {
+  let service: PlanningNaiveService;
+
+  beforeEach(() => {
+    service = new PlanningNaiveService();
+  });
+
+  const parametres: ParametresTour = {
+    nomsTerrains: ['A', 'B'],
+    dureeMatchMinutes: 10,
+    latenceMinutes: 2,
+    delaiDemarrageMinutes: 3,
+  };
+
+  it('retourne un tableau vide si aucun terrain à recalculer', () => {
+    const result = service.recalculerHorairesManuel(
+      {},
+      {},
+      parametres,
+      new Date('2026-06-13T08:00:00.000Z'),
+    );
+
+    expect(result).toEqual([]);
+  });
+
+  it("sans ancre pour un terrain, le 1er match démarre à maintenant + delaiDemarrageMinutes (même règle que calculerHoraires)", () => {
+    const matchesParTerrain = { A: [buildMatch({ id: 'match-1' })] };
+    const ancrePartTerrain = { A: null };
+
+    const [planifie] = service.recalculerHorairesManuel(
+      matchesParTerrain,
+      ancrePartTerrain,
+      parametres,
+      new Date('2026-06-13T08:00:00.000Z'),
+    );
+
+    expect(planifie.terrain).toBe('A');
+    expect(planifie.heureDebutPrevue).toBe('2026-06-13T08:03:00.000Z');
+    expect(planifie.heureFinPrevue).toBe('2026-06-13T08:13:00.000Z');
+  });
+
+  it('avec une ancre pour un terrain, le 1er match de ce terrain démarre à l’ancre (sans tenir compte de "maintenant")', () => {
+    const matchesParTerrain = { A: [buildMatch({ id: 'match-1' })] };
+    const ancrePartTerrain = { A: new Date('2026-06-13T09:00:00.000Z') };
+
+    const [planifie] = service.recalculerHorairesManuel(
+      matchesParTerrain,
+      ancrePartTerrain,
+      parametres,
+      new Date('2026-06-13T08:00:00.000Z'),
+    );
+
+    expect(planifie.heureDebutPrevue).toBe('2026-06-13T09:00:00.000Z');
+    expect(planifie.heureFinPrevue).toBe('2026-06-13T09:10:00.000Z');
+  });
+
+  it('respecte l’ordre fourni par terrain (réordonnancement intra-terrain) et chaîne les matchs suivants', () => {
+    const matchesParTerrain = {
+      A: [buildMatch({ id: 'match-2' }), buildMatch({ id: 'match-1' })],
+    };
+    const ancrePartTerrain = { A: null };
+
+    const planifies = service.recalculerHorairesManuel(
+      matchesParTerrain,
+      ancrePartTerrain,
+      parametres,
+      new Date('2026-06-13T08:00:00.000Z'),
+    );
+
+    expect(planifies.map((m) => m.id)).toEqual(['match-2', 'match-1']);
+    expect(planifies[0].heureDebutPrevue).toBe('2026-06-13T08:03:00.000Z');
+    // match-1, désormais 2e sur le terrain : fin de match-2 (08:13) + latence (2 min) = 08:15
+    expect(planifies[1].heureDebutPrevue).toBe('2026-06-13T08:15:00.000Z');
+  });
+
+  it('assigne le terrain de chaque match à la clé de groupe (déplacement inter-terrain), sans round-robin', () => {
+    const matchesParTerrain = {
+      A: [],
+      B: [buildMatch({ id: 'match-1', terrain: 'A' })],
+    };
+    const ancrePartTerrain = { A: null, B: null };
+
+    const planifies = service.recalculerHorairesManuel(
+      matchesParTerrain,
+      ancrePartTerrain,
+      parametres,
+      new Date('2026-06-13T08:00:00.000Z'),
+    );
+
+    expect(planifies).toHaveLength(1);
+    expect(planifies[0].terrain).toBe('B');
+  });
+
+  it('traite chaque terrain indépendamment (une ancre par terrain, pas de partage entre terrains)', () => {
+    const matchesParTerrain = {
+      A: [buildMatch({ id: 'match-1' })],
+      B: [buildMatch({ id: 'match-2' })],
+    };
+    const ancrePartTerrain = { A: new Date('2026-06-13T10:00:00.000Z'), B: null };
+
+    const planifies = service.recalculerHorairesManuel(
+      matchesParTerrain,
+      ancrePartTerrain,
+      parametres,
+      new Date('2026-06-13T08:00:00.000Z'),
+    );
+
+    const parId = new Map(planifies.map((m) => [m.id, m]));
+    expect(parId.get('match-1')?.heureDebutPrevue).toBe('2026-06-13T10:00:00.000Z');
+    expect(parId.get('match-2')?.heureDebutPrevue).toBe('2026-06-13T08:03:00.000Z');
+  });
+});

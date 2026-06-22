@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { EnregistrerScoreMatchDto } from '../../../application/tour/dto/enregistrer-score-match.dto';
+import { ReorganiserPlanningDto } from '../../../application/tour/dto/reorganiser-planning.dto';
 import {
   TerminerTourDto,
   TerminerTourResultDto,
@@ -7,6 +8,7 @@ import {
 import { TourCourantDto } from '../../../application/tour/dto/tour-courant.dto';
 import { EnregistrerScoreMatchUseCase } from '../../../application/tour/use-cases/enregistrer-score-match.use-case';
 import { ObtenirTourCourantUseCase } from '../../../application/tour/use-cases/obtenir-tour-courant.use-case';
+import { ReorganiserPlanningUseCase } from '../../../application/tour/use-cases/reorganiser-planning.use-case';
 import { TerminerTourUseCase } from '../../../application/tour/use-cases/terminer-tour.use-case';
 import { RequireAdmin } from '../shared/require-admin.decorator';
 
@@ -16,6 +18,7 @@ export class TourController {
     private readonly obtenirTourCourantUseCase: ObtenirTourCourantUseCase,
     private readonly terminerTourUseCase: TerminerTourUseCase,
     private readonly enregistrerScoreMatchUseCase: EnregistrerScoreMatchUseCase,
+    private readonly reorganiserPlanningUseCase: ReorganiserPlanningUseCase,
   ) {}
 
   @Get('courant')
@@ -40,5 +43,13 @@ export class TourController {
       dto.scoreA,
       dto.scoreB,
     );
+  }
+
+  @Patch('courant/planning')
+  @RequireAdmin()
+  async reorganiserPlanning(
+    @Body() dto: ReorganiserPlanningDto,
+  ): Promise<TourCourantDto> {
+    return this.reorganiserPlanningUseCase.execute(dto.parTerrain);
   }
 }

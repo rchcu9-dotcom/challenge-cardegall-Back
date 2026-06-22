@@ -14,12 +14,14 @@ import {
 } from '../../../application/equipe/dto/equipe.dto';
 import { InscrireEquipeDto } from '../../../application/equipe/dto/inscrire-equipe.dto';
 import { ReordonnerEquipesDto } from '../../../application/equipe/dto/reordonner-equipes.dto';
+import { CalculerPlanningProvisoireUseCase } from '../../../application/equipe/use-cases/calculer-planning-provisoire.use-case';
 import { CloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/cloturer-enrolements.use-case';
 import { DecloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/decloturer-enrolements.use-case';
 import { EnrolerEquipeUseCase } from '../../../application/equipe/use-cases/enroler-equipe.use-case';
 import { InscrireEquipeUseCase } from '../../../application/equipe/use-cases/inscrire-equipe.use-case';
 import { ListerEquipesUseCase } from '../../../application/equipe/use-cases/lister-equipes.use-case';
 import { ReordonnerEquipesUseCase } from '../../../application/equipe/use-cases/reordonner-equipes.use-case';
+import { TourDto, toTourDto } from '../../../application/tour/dto/tour.dto';
 import type { EnrolementStateRepository } from '../../../domain/equipe/repositories/enrolement-state.repository.interface';
 import type { EquipeRepository } from '../../../domain/equipe/repositories/equipe.repository.interface';
 import {
@@ -37,6 +39,7 @@ export class EquipeController {
     private readonly reordonnerEquipesUseCase: ReordonnerEquipesUseCase,
     private readonly cloturerEnrolementsUseCase: CloturerEnrolementsUseCase,
     private readonly decloturerEnrolementsUseCase: DecloturerEnrolementsUseCase,
+    private readonly calculerPlanningProvisoireUseCase: CalculerPlanningProvisoireUseCase,
     @Inject(EQUIPE_REPOSITORY)
     private readonly equipeRepository: EquipeRepository,
     @Inject(ENROLEMENT_STATE_REPOSITORY)
@@ -101,5 +104,12 @@ export class EquipeController {
       equipes: result.equipes.map(toEquipeDto),
       cloture: result.cloture,
     };
+  }
+
+  @Post('calculer-planning-provisoire')
+  @RequireAdmin()
+  async calculerPlanningProvisoire(): Promise<TourDto> {
+    const tour = await this.calculerPlanningProvisoireUseCase.execute();
+    return toTourDto(tour);
   }
 }

@@ -32,6 +32,7 @@ describe('InscrireEquipeUseCase', () => {
       nom: 'Logistique',
       capitaineUserId: 'demo-logistique',
       capitainePseudo: 'CapiLogistique',
+      capitaineEmail: 'capitaine@orange.com',
       nbJoueursApprox: 9,
       nbFemininesEnvisage: 3,
       commentaire: 'Arrivée tardive prévue',
@@ -43,6 +44,7 @@ describe('InscrireEquipeUseCase', () => {
       nom: 'Logistique',
       capitaineUserId: 'demo-logistique',
       capitainePseudo: 'CapiLogistique',
+      capitaineEmail: 'capitaine@orange.com',
       nbJoueursApprox: 9,
       nbFemininesEnvisage: 3,
       commentaire: 'Arrivée tardive prévue',
@@ -59,6 +61,7 @@ describe('InscrireEquipeUseCase', () => {
       nom: 'Support',
       capitaineUserId: 'demo-support',
       capitainePseudo: 'CapiSupport',
+      capitaineEmail: 'capitaine@orange.com',
       nbJoueursApprox: 8,
       nbFemininesEnvisage: 2,
     };
@@ -68,6 +71,21 @@ describe('InscrireEquipeUseCase', () => {
     expect(result.commentaire).toBeUndefined();
   });
 
+  it('normalise capitaineEmail en minuscules dans l’équipe créée', async () => {
+    const dto: InscrireEquipeDto = {
+      nom: 'Support',
+      capitaineUserId: 'demo-support',
+      capitainePseudo: 'CapiSupport',
+      capitaineEmail: 'Capitaine.Support@Orange.COM',
+      nbJoueursApprox: 8,
+      nbFemininesEnvisage: 2,
+    };
+
+    const result = await useCase.execute(dto);
+
+    expect(result.capitaineEmail).toBe('capitaine.support@orange.com');
+  });
+
   it('lève BadRequestException si les enrôlements sont clôturés, sans appeler equipes.save', async () => {
     enrolementState.isCloture.mockResolvedValue(true);
 
@@ -75,6 +93,7 @@ describe('InscrireEquipeUseCase', () => {
       nom: 'Support',
       capitaineUserId: 'demo-support',
       capitainePseudo: 'CapiSupport',
+      capitaineEmail: 'capitaine@orange.com',
       nbJoueursApprox: 8,
       nbFemininesEnvisage: 2,
     };

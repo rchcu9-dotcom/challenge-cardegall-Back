@@ -1,4 +1,14 @@
-import { IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsInt,
+  IsOptional,
+  IsString,
+  Matches,
+  Min,
+  MinLength,
+} from 'class-validator';
+
+export const ORANGE_COM_EMAIL_REGEX = /^[^\s@]+@([a-z0-9-]+\.)*orange\.com$/i;
 
 export class InscrireEquipeDto {
   @IsString()
@@ -12,6 +22,12 @@ export class InscrireEquipeDto {
   @IsString()
   @MinLength(1)
   capitainePseudo!: string;
+
+  @IsEmail()
+  @Matches(ORANGE_COM_EMAIL_REGEX, {
+    message: "L'adresse mail doit se terminer par orange.com",
+  })
+  capitaineEmail!: string;
 
   @IsInt()
   @Min(0)

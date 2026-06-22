@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TourController } from './tour.controller';
 import { EnregistrerScoreMatchUseCase } from '../../../application/tour/use-cases/enregistrer-score-match.use-case';
 import { ObtenirTourCourantUseCase } from '../../../application/tour/use-cases/obtenir-tour-courant.use-case';
+import { ReorganiserPlanningUseCase } from '../../../application/tour/use-cases/reorganiser-planning.use-case';
 import { TerminerTourUseCase } from '../../../application/tour/use-cases/terminer-tour.use-case';
 import { TourCourantDto } from '../../../application/tour/dto/tour-courant.dto';
 import { TerminerTourResultDto } from '../../../application/tour/dto/terminer-tour.dto';
@@ -31,6 +32,7 @@ describe('TourController', () => {
   let obtenirTourCourantUseCase: jest.Mocked<ObtenirTourCourantUseCase>;
   let terminerTourUseCase: jest.Mocked<TerminerTourUseCase>;
   let enregistrerScoreMatchUseCase: jest.Mocked<EnregistrerScoreMatchUseCase>;
+  let reorganiserPlanningUseCase: jest.Mocked<ReorganiserPlanningUseCase>;
 
   beforeEach(async () => {
     obtenirTourCourantUseCase = { execute: jest.fn() } as unknown as jest.Mocked<ObtenirTourCourantUseCase>;
@@ -38,6 +40,9 @@ describe('TourController', () => {
     enregistrerScoreMatchUseCase = {
       execute: jest.fn(),
     } as unknown as jest.Mocked<EnregistrerScoreMatchUseCase>;
+    reorganiserPlanningUseCase = {
+      execute: jest.fn(),
+    } as unknown as jest.Mocked<ReorganiserPlanningUseCase>;
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TourController],
@@ -45,6 +50,7 @@ describe('TourController', () => {
         { provide: ObtenirTourCourantUseCase, useValue: obtenirTourCourantUseCase },
         { provide: TerminerTourUseCase, useValue: terminerTourUseCase },
         { provide: EnregistrerScoreMatchUseCase, useValue: enregistrerScoreMatchUseCase },
+        { provide: ReorganiserPlanningUseCase, useValue: reorganiserPlanningUseCase },
       ],
     }).compile();
 
@@ -106,6 +112,20 @@ describe('TourController', () => {
     const result = await controller.enregistrerScore('match-1', { scoreA: 3, scoreB: 1 });
 
     expect(enregistrerScoreMatchUseCase.execute).toHaveBeenCalledWith('match-1', 3, 1);
+    expect(result).toEqual(dto);
+  });
+
+  it('PATCH /tours/courant/planning délègue à ReorganiserPlanningUseCase avec parTerrain et retourne le TourCourantDto', async () => {
+    const dto = buildTourCourantDto();
+    reorganiserPlanningUseCase.execute.mockResolvedValue(dto);
+    const parTerrain = [
+      { terrain: 'A', matchIds: ['match-2', 'match-1'] },
+      { terrain: 'B', matchIds: [] },
+    ];
+
+    const result = await controller.reorganiserPlanning({ parTerrain });
+
+    expect(reorganiserPlanningUseCase.execute).toHaveBeenCalledWith(parTerrain);
     expect(result).toEqual(dto);
   });
 });

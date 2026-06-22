@@ -6,6 +6,8 @@ export interface Equipe {
   capitaineUserId: string;
   /** Pseudo affiché du Capitaine, saisi à l'inscription. Absent pour les équipes seedées (fallback front sur capitaineUserId). */
   capitainePseudo?: string;
+  /** Adresse mail du Capitaine, normalisée en minuscules. Absente pour les équipes seedées. */
+  capitaineEmail?: string;
   nbJoueursApprox: number;
   nbFemininesEnvisage: number;
   commentaire?: string;

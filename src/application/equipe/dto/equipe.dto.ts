@@ -8,6 +8,7 @@ export interface EquipeDto {
   nom: string;
   capitaineUserId: string;
   capitainePseudo?: string;
+  capitaineEmail?: string;
   nbJoueursApprox: number;
   nbFemininesEnvisage: number;
   commentaire?: string;

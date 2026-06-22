@@ -25,22 +25,67 @@ export class PlanningNaiveService implements PlanningService {
     return matches.map((match, index) => {
       const terrain =
         parametres.nomsTerrains[index % parametres.nomsTerrains.length];
-      const heureDebut = finsParTerrain.get(terrain) ?? debut;
-      const heureFin = new Date(
-        heureDebut.getTime() + parametres.dureeMatchMinutes * 60_000,
-      );
-
-      finsParTerrain.set(
+      const { match: planifie, finPrevue } = this.chainerMatch(
+        match,
         terrain,
-        new Date(heureFin.getTime() + parametres.latenceMinutes * 60_000),
+        finsParTerrain.get(terrain) ?? debut,
+        parametres,
       );
+      finsParTerrain.set(terrain, finPrevue);
+      return planifie;
+    });
+  }
 
-      return {
+  recalculerHorairesManuel(
+    matchesParTerrain: Record<string, Match[]>,
+    ancrePartTerrain: Record<string, Date | null>,
+    parametres: ParametresTour,
+    maintenant: Date,
+  ): Match[] {
+    const debutParDefaut = new Date(
+      maintenant.getTime() + parametres.delaiDemarrageMinutes * 60_000,
+    );
+    const resultat: Match[] = [];
+
+    for (const [terrain, matches] of Object.entries(matchesParTerrain)) {
+      let prochaineHeureLibre = ancrePartTerrain[terrain] ?? debutParDefaut;
+
+      for (const match of matches) {
+        const { match: planifie, finPrevue } = this.chainerMatch(
+          match,
+          terrain,
+          prochaineHeureLibre,
+          parametres,
+        );
+        resultat.push(planifie);
+        prochaineHeureLibre = finPrevue;
+      }
+    }
+
+    return resultat;
+  }
+
+  /** Date/heure de fin prévue à utiliser comme point de départ du match suivant sur ce terrain. */
+  private chainerMatch(
+    match: Match,
+    terrain: string,
+    heureDebut: Date,
+    parametres: ParametresTour,
+  ): { match: Match; finPrevue: Date } {
+    const heureFin = new Date(
+      heureDebut.getTime() + parametres.dureeMatchMinutes * 60_000,
+    );
+
+    return {
+      match: {
         ...match,
         terrain,
         heureDebutPrevue: heureDebut.toISOString(),
         heureFinPrevue: heureFin.toISOString(),
-      };
-    });
+      },
+      finPrevue: new Date(
+        heureFin.getTime() + parametres.latenceMinutes * 60_000,
+      ),
+    };
   }
 }

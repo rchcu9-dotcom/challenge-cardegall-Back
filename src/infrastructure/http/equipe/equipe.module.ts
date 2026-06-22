@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { CalculerPlanningProvisoireUseCase } from '../../../application/equipe/use-cases/calculer-planning-provisoire.use-case';
 import { CloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/cloturer-enrolements.use-case';
 import { DecloturerEnrolementsUseCase } from '../../../application/equipe/use-cases/decloturer-enrolements.use-case';
 import { EnrolerEquipeUseCase } from '../../../application/equipe/use-cases/enroler-equipe.use-case';
@@ -16,6 +17,7 @@ import {
   TOUR_REPOSITORY,
 } from '../../../domain/shared/tokens';
 import { AppariementSuisseService } from '../../../domain/tour/services/appariement-suisse.service';
+import { PremierTourService } from '../../../domain/tour/services/premier-tour.service';
 // In-memory bindings conservés en commentaire pour faciliter un retour en arrière en dev/tests :
 // import { EnrolementStateInMemoryRepository } from '../../persistence/in-memory/enrolement-state.in-memory.repository';
 // import { EquipeInMemoryRepository } from '../../persistence/in-memory/equipe.in-memory.repository';
@@ -35,6 +37,8 @@ import { EquipeController } from './equipe.controller';
     ReordonnerEquipesUseCase,
     CloturerEnrolementsUseCase,
     DecloturerEnrolementsUseCase,
+    CalculerPlanningProvisoireUseCase,
+    PremierTourService,
     { provide: EQUIPE_REPOSITORY, useClass: EquipePrismaRepository },
     {
       provide: ENROLEMENT_STATE_REPOSITORY,

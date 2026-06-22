@@ -32,6 +32,7 @@ export class InscrireEquipeUseCase {
       nom: dto.nom,
       capitaineUserId: dto.capitaineUserId,
       capitainePseudo: dto.capitainePseudo,
+      capitaineEmail: dto.capitaineEmail.toLowerCase(),
       nbJoueursApprox: dto.nbJoueursApprox,
       nbFemininesEnvisage: dto.nbFemininesEnvisage,
       commentaire: dto.commentaire,

@@ -72,6 +72,24 @@ describe('EquipePrismaRepository', () => {
       expect(result).toEqual(buildEquipe());
     });
 
+    it('mappe capitaineEmail de la ligne vers le domain quand renseigné', async () => {
+      prisma.equipe.findUnique.mockResolvedValue(
+        buildEquipeRow({ capitaineEmail: 'capitaine.dsi@orange.com' }),
+      );
+
+      const result = await repository.findById('equipe-1');
+
+      expect(result).toEqual(buildEquipe({ capitaineEmail: 'capitaine.dsi@orange.com' }));
+    });
+
+    it('mappe capitaineEmail en undefined quand la ligne ne l’a pas (équipe seedée)', async () => {
+      prisma.equipe.findUnique.mockResolvedValue(buildEquipeRow({ capitaineEmail: null }));
+
+      const result = await repository.findById('equipe-1');
+
+      expect(result?.capitaineEmail).toBeUndefined();
+    });
+
     it('retourne null si la ligne est introuvable', async () => {
       prisma.equipe.findUnique.mockResolvedValue(null);
 
@@ -109,6 +127,20 @@ describe('EquipePrismaRepository', () => {
       expect(create.nbFemininesReel).toBeNull();
       expect(create.ordreArrivee).toBeNull();
       expect(create.dateEnrolement).toBeNull();
+      expect(create.capitaineEmail).toBeNull();
+    });
+
+    it('mappe capitaineEmail vers la colonne quand renseigné', async () => {
+      const equipe = buildEquipe({ capitaineEmail: 'capitaine.dsi@orange.com' });
+      prisma.equipe.upsert.mockResolvedValue(
+        buildEquipeRow({ capitaineEmail: 'capitaine.dsi@orange.com' }),
+      );
+
+      const result = await repository.save(equipe);
+
+      const { create } = prisma.equipe.upsert.mock.calls[0][0];
+      expect(create.capitaineEmail).toBe('capitaine.dsi@orange.com');
+      expect(result.capitaineEmail).toBe('capitaine.dsi@orange.com');
     });
   });
 
