@@ -134,14 +134,26 @@ describe('EquipeController', () => {
     expect(result.statut).toBe('inscrite');
   });
 
-  it('GET /equipes/enrolees délègue à equipeRepository.findEnroleesOrdered()', async () => {
-    const enrolee = buildEquipe({ statut: 'enrolee', nbFemininesReel: 3, ordreArrivee: 1 });
-    equipeRepository.findEnroleesOrdered.mockResolvedValue([enrolee]);
+  it('GET /equipes/enrolees retourne les équipes enrôlées et engagées, triées par ordreArrivee', async () => {
+    const inscrite = buildEquipe({ id: 'equipe-inscrite', statut: 'inscrite' });
+    const engagee = buildEquipe({
+      id: 'equipe-engagee',
+      statut: 'engagee',
+      nbFemininesReel: 2,
+      ordreArrivee: 1,
+    });
+    const enrolee = buildEquipe({
+      id: 'equipe-enrolee',
+      statut: 'enrolee',
+      nbFemininesReel: 3,
+      ordreArrivee: 2,
+    });
+    equipeRepository.findAll.mockResolvedValue([enrolee, inscrite, engagee]);
 
     const result = await controller.findEnrolees();
 
-    expect(equipeRepository.findEnroleesOrdered).toHaveBeenCalledTimes(1);
-    expect(result).toEqual([enrolee]);
+    expect(equipeRepository.findAll).toHaveBeenCalledTimes(1);
+    expect(result).toEqual([engagee, enrolee]);
   });
 
   it('GET /equipes/enrolement-etat retourne { cloture } depuis EnrolementStateRepository', async () => {

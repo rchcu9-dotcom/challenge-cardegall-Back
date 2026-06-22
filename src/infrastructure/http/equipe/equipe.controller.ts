@@ -60,8 +60,11 @@ export class EquipeController {
 
   @Get('enrolees')
   async findEnrolees(): Promise<EquipeDto[]> {
-    const equipes = await this.equipeRepository.findEnroleesOrdered();
-    return equipes.map(toEquipeDto);
+    const equipes = await this.equipeRepository.findAll();
+    return equipes
+      .filter((equipe) => equipe.statut === 'enrolee' || equipe.statut === 'engagee')
+      .sort((a, b) => (a.ordreArrivee ?? 0) - (b.ordreArrivee ?? 0))
+      .map(toEquipeDto);
   }
 
   @Get('enrolement-etat')
