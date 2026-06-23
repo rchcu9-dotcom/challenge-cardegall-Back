@@ -138,6 +138,7 @@ describe('ObtenirTourCourantUseCase', () => {
 
     expect(result.tour).toEqual(tour);
     expect(result.matches).toEqual(matches);
+    expect(result.tousLesMatchs).toEqual(tousLesMatchs);
     expect(result.classement).toEqual(classement);
     expect(matchRepository.findByTour).toHaveBeenCalledWith('tour-1');
 

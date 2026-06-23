@@ -47,6 +47,7 @@ export class ObtenirTourCourantUseCase {
     return {
       tour: toTourDto(tour),
       matches: matches.map(toMatchDto),
+      tousLesMatchs: tousLesMatchs.map(toMatchDto),
       classement: classement.map(toClassementEntryDto),
       resultatsComplets,
     };
