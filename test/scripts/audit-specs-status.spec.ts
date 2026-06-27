@@ -217,7 +217,16 @@ describe('buildAuditRow', () => {
   });
 });
 
-describe('buildReport (intégration sur le vrai dépôt)', () => {
+// `buildReport` lit docs/specs/ et docs/deploiements.log.jsonl à la racine du
+// monorepo local (cf. scripts/audit-specs-status.ts) — absents par construction
+// du checkout CI de ce repo (back/ est versionné séparément, sans docs/). Cette
+// suite d'intégration ne peut donc s'exécuter que dans le monorepo local complet.
+const monorepoDocsDir = require('node:path').resolve(__dirname, '../../../docs');
+const describeIfMonorepo = require('node:fs').existsSync(monorepoDocsDir)
+  ? describe
+  : describe.skip;
+
+describeIfMonorepo('buildReport (intégration sur le vrai dépôt)', () => {
   const validClassifications = [
     'candidate-sure-staging',
     'ambigue-verification-requise',
