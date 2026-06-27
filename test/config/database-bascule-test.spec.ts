@@ -72,7 +72,13 @@ const describeEnvLocal = existsSync(envLocalPath) ? describe : describe.skip;
 describeEnvLocal(
   'back/.env.local — bascule effective (fichier local non versionné, vérifié si présent)',
   () => {
-    const content = readFileSync(envLocalPath, 'utf-8');
+    // Lu dans beforeAll (et non au niveau du describe) : describe.skip n'empêche
+    // pas l'exécution du corps du describe lui-même (seulement des hooks/it),
+    // donc un readFileSync ici planterait quand même en CI où le fichier n'existe pas.
+    let content: string;
+    beforeAll(() => {
+      content = readFileSync(envLocalPath, 'utf-8');
+    });
 
     it('pointe DATABASE_URL vers rchcu11_cardegall_test', () => {
       expect(content).toMatch(/DATABASE_URL=.*rchcu11_cardegall_test/);
