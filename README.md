@@ -54,7 +54,7 @@ disponibilité du service.
 |---|---|
 | Local | http://localhost:3010/health |
 | Staging | https://challenge-cardegall-back.proudcoast-98490a89.westeurope.azurecontainerapps.io/health |
-| Prod | _à compléter une fois le déploiement effectué_ |
+| Prod | https://challenge-cardegall-back-585494077059.europe-west9.run.app/health |
 
 ## Branches
 
