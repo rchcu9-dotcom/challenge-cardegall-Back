@@ -49,11 +49,15 @@ describe('back/.env.example — placeholders génériques uniquement', () => {
   });
 });
 
-describe('back/.env.production.example — hors périmètre de cette spec', () => {
+describe('back/.env.production.example — DATABASE_URL prod documentée mais non commitée en clair', () => {
   const content = readBackFile('.env.production.example');
 
-  it('ne définit pas DATABASE_URL (environnement Cloud Run non déployé)', () => {
+  it('ne définit pas de DATABASE_URL en clair (valeur réelle injectée via gcloud run services update)', () => {
     expect(content).not.toMatch(/^DATABASE_URL=/m);
+  });
+
+  it('documente la base prod dédiée rchcu11_cardegall (pas la base de test)', () => {
+    expect(content).toMatch(/rchcu11_cardegall(?!_test)/);
   });
 });
 
